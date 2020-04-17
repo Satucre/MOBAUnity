@@ -1466,7 +1466,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthImage: {fileID: 8313970987869558864}
-  healthText: {fileID: 0}
   updateSpeedSeconds: 0.2
 --- !u!1 &3670241351430015374
 GameObject:

@@ -1614,5 +1614,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthImage: {fileID: 7906868586744353966}
-  healthText: {fileID: 0}
   updateSpeedSeconds: 0.2
