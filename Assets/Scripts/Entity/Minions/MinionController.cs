@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -17,16 +18,20 @@ public class MinionController : MonoBehaviour
     private readonly float lookRadius = 10f;
     private float attackCooldown = 2f;
     private float currentCooldown = 2f;
+    public event Action<int, int> OnHealthChanged = delegate { };
 
     public void AttackMinion(int damage)
     {
         if (data.GetHp() > damage)
         {
             data.SetHp(data.GetHp() - damage);
+            OnHealthChanged(data.GetHp(), data.GetMaxHp());
         }
         else
         {
+            data.SetHp(0);
             StartCoroutine(MinionDeath());
+            OnHealthChanged(data.GetHp(), data.GetMaxHp());
         }
     }
 
@@ -52,6 +57,7 @@ public class MinionController : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
         walkedFromSpawn = false;
+        OnHealthChanged(data.GetHp(), data.GetMaxHp());
     }
 
     // Update is called once per frame
@@ -61,11 +67,17 @@ public class MinionController : MonoBehaviour
         {
             if (data.GetTeam() == TeamConfig.TEAM1)
             {
-                minionTarget = GameManager.Instance.Team2Minions[Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
+                if (GameManager.Instance.Team2Minions.Count > 0)
+                {
+                    minionTarget = GameManager.Instance.Team2Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
+                } 
             }
             else
             {
-                minionTarget = GameManager.Instance.Team1Minions[Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
+                if (GameManager.Instance.Team1Minions.Count > 0)
+                {
+                    minionTarget = GameManager.Instance.Team1Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
+                }
             }
         }
 
@@ -95,7 +107,7 @@ public class MinionController : MonoBehaviour
                         {
                             animator.SetTrigger("attack");
                             transform.LookAt(minionTarget);
-                            minionTarget.GetComponent<MinionController>().AttackMinion(Random.Range(0, 85));
+                            minionTarget.GetComponent<MinionController>().AttackMinion(UnityEngine.Random.Range(0, 85));
                             currentCooldown = attackCooldown;
                         }
                     }

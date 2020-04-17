@@ -5,6 +5,7 @@ using UnityEngine;
 public class Minion : IEntity
 {
 
+    private int maxHp;
     private int hp;
     private int xp;
     private int id;
@@ -13,6 +14,7 @@ public class Minion : IEntity
 
     public Minion(int hp, int xp, int id, TeamConfig team)
     {
+        this.maxHp = hp;
         this.hp = hp;
         this.xp = xp;
         this.id = id;
@@ -20,6 +22,11 @@ public class Minion : IEntity
         isDead = false;
     }
 
+    public int GetMaxHp()
+    {
+        return maxHp;
+    }
+    
     public int GetHp()
     {
         return hp;
