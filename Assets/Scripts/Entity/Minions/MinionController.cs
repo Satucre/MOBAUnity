@@ -12,6 +12,11 @@ public class MinionController : MonoBehaviour
     public Minion data;
     NavMeshAgent agent;
     Animator animator;
+    Transform minionTarget;
+    bool walkedFromSpawn;
+    private readonly float lookRadius = 10f;
+    private float attackCooldown = 2f;
+    private float currentCooldown = 2f;
 
     public void AttackMinion(int damage)
     {
@@ -29,6 +34,14 @@ public class MinionController : MonoBehaviour
     {
         animator.SetTrigger("dead");
         data.SetIsDead(true);
+        if(data.GetTeam() == TeamConfig.TEAM1)
+        {
+            GameManager.Instance.Team1Minions.Remove(this);
+        }
+        else
+        {
+            GameManager.Instance.Team2Minions.Remove(this);
+        }
         yield return new WaitForSeconds(3);
         Destroy(gameObject);
     }
@@ -38,19 +51,62 @@ public class MinionController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
+        walkedFromSpawn = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (data.GetTeam() == TeamConfig.TEAM2)
+        if (minionTarget == null && !agent.hasPath)
+        {
+            if (data.GetTeam() == TeamConfig.TEAM1)
+            {
+                minionTarget = GameManager.Instance.Team2Minions[Random.Range(0, GameManager.Instance.Team2Minions.Count)].transform;
+            }
+            else
+            {
+                minionTarget = GameManager.Instance.Team1Minions[Random.Range(0, GameManager.Instance.Team1Minions.Count)].transform;
+            }
+        }
+
+        if (data.GetTeam() == TeamConfig.TEAM2  && walkedFromSpawn == false)
         {
             agent.SetDestination(endPointsBlue[data.GetId()]);
+            walkedFromSpawn = true;
         } 
-        else if (data.GetTeam() == TeamConfig.TEAM1)
+        else if (data.GetTeam() == TeamConfig.TEAM1 && walkedFromSpawn == false)
         {
             agent.SetDestination(endPointsRed[data.GetId()]);
+            walkedFromSpawn = true;
         }
+        else if (minionTarget != null)
+        {
+            float distance = Vector3.Distance(minionTarget.position, transform.position);
+            if (distance <= lookRadius)
+            {
+                agent.SetDestination(minionTarget.position);
+                if (distance <= agent.stoppingDistance)
+                {
+                    agent.isStopped = true;
+                    agent.ResetPath();
+                    if (!minionTarget.GetComponent<MinionController>().data.GetIsDead())
+                    {
+                        if (currentCooldown <= 0)
+                        {
+                            animator.SetTrigger("attack");
+                            transform.LookAt(minionTarget);
+                            minionTarget.GetComponent<MinionController>().AttackMinion(Random.Range(0, 85));
+                            currentCooldown = attackCooldown;
+                        }
+                    }
+                    else
+                    {
+                        minionTarget = null;
+                    }
+                }
+            }
+        }
+
         if (agent.hasPath)
         {
             animator.SetBool("walking", true);
@@ -58,6 +114,11 @@ public class MinionController : MonoBehaviour
         else
         {
             animator.SetBool("walking", false);
+        }
+        
+        if(currentCooldown > 0)
+        {
+            currentCooldown -= Time.deltaTime;
         }
     }
 }

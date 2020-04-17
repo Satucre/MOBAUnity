@@ -25,7 +25,7 @@ public class GameManagerBehavior : MonoBehaviour
         GameObject minion = PhotonNetwork.Instantiate(Path.Combine("MinionRes", "MinionBlue"), spawnPointBlue, Quaternion.identity);
         Minion minionData = new Minion(750, 5, id, TeamConfig.TEAM2);
         minion.GetComponent<MinionController>().data = minionData;
-        GameManager.Instance.Team1Minions.Add(minionData);
+        GameManager.Instance.Team2Minions.Add(minion.GetComponent<MinionController>());
         yield return null;
     }
 
@@ -35,7 +35,7 @@ public class GameManagerBehavior : MonoBehaviour
         GameObject minion = PhotonNetwork.Instantiate(Path.Combine("MinionRes", "MinionRed"), spawnPointRed, Quaternion.identity);
         Minion minionData = new Minion(750, 5, id, TeamConfig.TEAM1);
         minion.GetComponent<MinionController>().data = minionData;
-        GameManager.Instance.Team2Minions.Add(minionData);
+        GameManager.Instance.Team1Minions.Add(minion.GetComponent<MinionController>());
         yield return null;
     }
 
