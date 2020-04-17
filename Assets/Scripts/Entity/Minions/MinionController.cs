@@ -13,6 +13,26 @@ public class MinionController : MonoBehaviour
     NavMeshAgent agent;
     Animator animator;
 
+    public void AttackMinion(int damage)
+    {
+        if (data.GetHp() > damage)
+        {
+            data.SetHp(data.GetHp() - damage);
+        }
+        else
+        {
+            StartCoroutine(MinionDeath());
+        }
+    }
+
+    IEnumerator MinionDeath()
+    {
+        animator.SetTrigger("dead");
+        data.SetIsDead(true);
+        yield return new WaitForSeconds(3);
+        Destroy(gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,11 +43,11 @@ public class MinionController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (data.GetTeam() == TeamConfig.TEAM1)
+        if (data.GetTeam() == TeamConfig.TEAM2)
         {
             agent.SetDestination(endPointsBlue[data.GetId()]);
         } 
-        else if (data.GetTeam() == TeamConfig.TEAM2)
+        else if (data.GetTeam() == TeamConfig.TEAM1)
         {
             agent.SetDestination(endPointsRed[data.GetId()]);
         }

@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-[RequireComponent(typeof(Rigidbody))]
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Animator))]
 public class PlayerMovement : MonoBehaviour
 {
-
-    Rigidbody m_Rigidbody;
+    
     Animator m_Animator;
     CapsuleCollider m_Capsule;
     NavMeshAgent agent;
@@ -22,7 +20,6 @@ public class PlayerMovement : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        m_Rigidbody = GetComponent<Rigidbody>();
         m_Capsule = GetComponent<CapsuleCollider>();
         m_Animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
@@ -40,12 +37,12 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetMouseButtonDown(1))
             {
-                int layerMask = LayerMask.GetMask("Terrain", "Interactable");
+                int layerMask = LayerMask.GetMask("Terrain", "Interactable", "Enemy");
                 ray = Camera.main.ScreenPointToRay(Input.mousePosition);
                 Physics.Raycast(ray, out hit, 500, layerMask);
                 if (hit.transform)
                 {
-                    if (hit.transform.tag == "Interactable")
+                    if (hit.transform.tag == "Interactable" || hit.transform.tag == "Enemy")
                     {
                         if (Vector3.Distance(hit.transform.position, gameObject.transform.position) <= playerController.GetPlayer().GetDistanceRequiredToAttack())
                         {

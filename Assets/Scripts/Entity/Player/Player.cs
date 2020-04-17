@@ -20,6 +20,7 @@ public class Player : IEntity
     private float attackSpeed;
     private float currentCoolDown;
     private float distanceRequiredToAttack;
+    private int damage;
     #endregion
 
     #region Constructors
@@ -32,6 +33,7 @@ public class Player : IEntity
         attackSpeed = 2f;
         currentCoolDown = 0f;
         distanceRequiredToAttack = 2.5f;
+        damage = 250;
     }
     
     public Player(string username, TeamConfig team)
@@ -50,11 +52,20 @@ public class Player : IEntity
         attackSpeed = 2f;
         currentCoolDown = 0f;
         distanceRequiredToAttack = 2.5f;
+        damage = 250;
     }
 
     #endregion
 
     #region Getters/Setters
+    public int GetDamage()
+    {
+        return damage;
+    }
+    public void SetDamage(int damage)
+    {
+        this.damage = damage;
+    }
 
     public string GetUsername ()
     {

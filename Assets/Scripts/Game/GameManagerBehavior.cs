@@ -23,7 +23,7 @@ public class GameManagerBehavior : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         GameObject minion = PhotonNetwork.Instantiate(Path.Combine("MinionRes", "MinionBlue"), spawnPointBlue, Quaternion.identity);
-        Minion minionData = new Minion(50, 5, id, TeamConfig.TEAM1);
+        Minion minionData = new Minion(750, 5, id, TeamConfig.TEAM2);
         minion.GetComponent<MinionController>().data = minionData;
         GameManager.Instance.Team1Minions.Add(minionData);
         yield return null;
@@ -33,7 +33,7 @@ public class GameManagerBehavior : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         GameObject minion = PhotonNetwork.Instantiate(Path.Combine("MinionRes", "MinionRed"), spawnPointRed, Quaternion.identity);
-        Minion minionData = new Minion(50, 5, id, TeamConfig.TEAM2);
+        Minion minionData = new Minion(750, 5, id, TeamConfig.TEAM1);
         minion.GetComponent<MinionController>().data = minionData;
         GameManager.Instance.Team2Minions.Add(minionData);
         yield return null;

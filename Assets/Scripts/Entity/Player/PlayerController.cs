@@ -114,13 +114,18 @@ public class PlayerController : MonoBehaviour
         {
             TowerBehaviour tower = objectToAttack.GetComponentInParent<TowerBehaviour>();
             NexusBehaviour nexus = objectToAttack.GetComponentInParent<NexusBehaviour>();
+            MinionController minion = objectToAttack.GetComponentInParent<MinionController>();
             if (tower != null)
             {
                 if (!tower.TowerData.CanBeAttacked())
                 {
                     return;
                 }
-                tower.TriggerHit();
+                if (tower.TowerConfig == playerData.GetTeam())
+                {
+                    return;
+                }
+                tower.TriggerHit(GetPlayer().GetDamage());
                 playerData.SetCurrentCooldown(playerData.GetAttackSpeed());
                 animator.SetTrigger("IsDoingAutoAttack");
             }
@@ -130,9 +135,30 @@ public class PlayerController : MonoBehaviour
                 {
                     return;
                 }
-                nexus.TriggerHit();
+                if (nexus.NexusConfig == playerData.GetTeam())
+                {
+                    return;
+                }
+                nexus.TriggerHit(GetPlayer().GetDamage());
                 playerData.SetCurrentCooldown(playerData.GetAttackSpeed());
                 animator.SetTrigger("IsDoingAutoAttack");
+            }
+            else if (minion != null)
+            {
+                if (!minion.data.GetIsDead())
+                {
+                    if (minion.data.GetTeam() == playerData.GetTeam())
+                    {
+                        return;
+                    }
+                    if (minion.data.GetHp() - GetPlayer().GetDamage() <= 0)
+                    {
+                        //XP ETC
+                    }
+                    minion.AttackMinion(GetPlayer().GetDamage());
+                    playerData.SetCurrentCooldown(playerData.GetAttackSpeed());
+                    animator.SetTrigger("IsDoingAutoAttack");
+                }
             }
         }
     }

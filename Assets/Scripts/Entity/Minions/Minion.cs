@@ -8,6 +8,7 @@ public class Minion : IEntity
     private int hp;
     private int xp;
     private int id;
+    private bool isDead;
     private TeamConfig team;
 
     public Minion(int hp, int xp, int id, TeamConfig team)
@@ -16,6 +17,7 @@ public class Minion : IEntity
         this.xp = xp;
         this.id = id;
         this.team = team;
+        isDead = false;
     }
 
     public int GetHp()
@@ -57,4 +59,15 @@ public class Minion : IEntity
     {
         return id;
     }
+
+    public void SetIsDead(bool value)
+    {
+        isDead = value;
+    }
+
+    public bool GetIsDead()
+    {
+        return isDead;
+    }
+
 }

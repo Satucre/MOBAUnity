@@ -31,9 +31,9 @@ public class TowerBehaviour : MonoBehaviourPunCallbacks
         
     }
 
-    public void TriggerHit()
+    public void TriggerHit(int damage)
     {
-        photonView.RPC("Hit", RpcTarget.All, 100);
+        photonView.RPC("Hit", RpcTarget.All, damage);
     }
 
     [PunRPC]
