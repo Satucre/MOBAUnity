@@ -61,11 +61,11 @@ public class MinionController : MonoBehaviour
         {
             if (data.GetTeam() == TeamConfig.TEAM1)
             {
-                minionTarget = GameManager.Instance.Team2Minions[Random.Range(0, GameManager.Instance.Team2Minions.Count)].transform;
+                minionTarget = GameManager.Instance.Team2Minions[Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
             }
             else
             {
-                minionTarget = GameManager.Instance.Team1Minions[Random.Range(0, GameManager.Instance.Team1Minions.Count)].transform;
+                minionTarget = GameManager.Instance.Team1Minions[Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
             }
         }
 
@@ -91,7 +91,7 @@ public class MinionController : MonoBehaviour
                     agent.ResetPath();
                     if (!minionTarget.GetComponent<MinionController>().data.GetIsDead())
                     {
-                        if (currentCooldown <= 0)
+                        if (currentCooldown <= 0 && !data.GetIsDead())
                         {
                             animator.SetTrigger("attack");
                             transform.LookAt(minionTarget);
