@@ -7,7 +7,16 @@ public class Minion : IEntity
 
     private int hp;
     private int xp;
+    private int id;
     private TeamConfig team;
+
+    public Minion(int hp, int xp, int id, TeamConfig team)
+    {
+        this.hp = hp;
+        this.xp = xp;
+        this.id = id;
+        this.team = team;
+    }
 
     public int GetHp()
     {
@@ -37,5 +46,15 @@ public class Minion : IEntity
     public void SetXp(int xp)
     {
         this.xp = xp;
+    }
+
+    public void SetId(int id)
+    {
+        this.id = id;
+    }
+
+    public int GetId()
+    {
+        return id;
     }
 }

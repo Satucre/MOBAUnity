@@ -12,6 +12,8 @@ public class GameManager
     public IBuilding[] Team1Buildings = new IBuilding[10];
     public IBuilding[] Team2Buildings = new IBuilding[10];
     public BuildingKills BuildingKillsSubject;
+    public List<Minion> Team1Minions;
+    public List<Minion> Team2Minions;
 
     private GameManager()
     {
@@ -19,6 +21,8 @@ public class GameManager
         GameManagerBehavior = gm.GetComponent<GameManagerBehavior>();
         Team1 = new List<Player>();
         Team2 = new List<Player>();
+        Team1Minions = new List<Minion>();
+        Team2Minions = new List<Minion>();
         BuildingsInitialization();
     }
 
