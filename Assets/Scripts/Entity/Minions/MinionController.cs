@@ -13,12 +13,14 @@ public class MinionController : MonoBehaviour
     public Minion data;
     NavMeshAgent agent;
     Animator animator;
-    Transform minionTarget;
+    Transform target;
     bool walkedFromSpawn;
-    private readonly float lookRadius = 10f;
+    private readonly float lookRadius = 20f;
     private float attackCooldown = 2f;
     private float currentCooldown = 2f;
     public event Action<int, int> OnHealthChanged = delegate { };
+    private bool isAttackingBuilding;
+    private float buildingAttackRange = 2.5f;
 
     public void AttackMinion(int damage)
     {
@@ -58,35 +60,68 @@ public class MinionController : MonoBehaviour
         animator = GetComponent<Animator>();
         walkedFromSpawn = false;
         OnHealthChanged(data.GetHp(), data.GetMaxHp());
+        isAttackingBuilding = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (minionTarget == null && !agent.hasPath)
+        if (target == null)
         {
             if (data.GetTeam() == TeamConfig.TEAM1)
             {
                 if (GameManager.Instance.Team2Minions.Count > 0)
                 {
-                    minionTarget = GameManager.Instance.Team2Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
+                    target = GameManager.Instance.Team2Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
+                    isAttackingBuilding = false;
                 } 
                 else
                 {
                     agent.isStopped = true;
                     agent.ResetPath();
+                    int index = 0;
+                    foreach(IBuilding building in GameManager.Instance.Team2Buildings)
+                    {
+                        if (building.CanBeAttacked())
+                        {
+                            Transform buildingTransform = GameManager.Instance.GameManagerBehavior.Team2BuildingsGameObjects[index].transform;
+                            float distance = Vector3.Distance(transform.position, buildingTransform.position);
+                            if (distance <= lookRadius)
+                            {
+                                target = buildingTransform;
+                                isAttackingBuilding = true;
+                            }
+                        }
+                        index++;
+                    }
                 }
             }
             else
             {
                 if (GameManager.Instance.Team1Minions.Count > 0)
                 {
-                    minionTarget = GameManager.Instance.Team1Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
+                    target = GameManager.Instance.Team1Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
+                    isAttackingBuilding = false;
                 }
                 else
                 {
                     agent.isStopped = true;
                     agent.ResetPath();
+                    int index = 0;
+                    foreach (IBuilding building in GameManager.Instance.Team1Buildings)
+                    {
+                        if (building.CanBeAttacked())
+                        {
+                            Transform buildingTransform = GameManager.Instance.GameManagerBehavior.Team1BuildingsGameObjects[index].transform;
+                            float distance = Vector3.Distance(transform.position, buildingTransform.position);
+                            if (distance <= lookRadius)
+                            {
+                                target = buildingTransform;
+                                isAttackingBuilding = true;
+                            }
+                        }
+                        index++;
+                    }
                 }
             }
         }
@@ -101,29 +136,73 @@ public class MinionController : MonoBehaviour
             agent.SetDestination(endPointsRed[data.GetId()]);
             walkedFromSpawn = true;
         }
-        else if (minionTarget != null)
+        else if (target != null)
         {
-            float distance = Vector3.Distance(minionTarget.position, transform.position);
-            if (distance <= lookRadius)
+            float distance = Vector3.Distance(target.position, transform.position);
+            if (distance <= lookRadius || isAttackingBuilding)
             {
-                agent.SetDestination(minionTarget.position);
-                if (distance <= agent.stoppingDistance)
+                agent.SetDestination(target.position);
+                if (distance <= agent.stoppingDistance || (isAttackingBuilding && distance <= buildingAttackRange))
                 {
                     agent.isStopped = true;
                     agent.ResetPath();
-                    if (!minionTarget.GetComponent<MinionController>().data.GetIsDead())
+                    MinionController minionTarget = target.GetComponent<MinionController>();
+                    TowerBehaviour tower = target.GetComponentInParent<TowerBehaviour>();
+                    NexusBehaviour nexus = target.GetComponentInParent<NexusBehaviour>();
+                    if (minionTarget != null && !minionTarget.data.GetIsDead())
                     {
                         if (currentCooldown <= 0 && !data.GetIsDead())
                         {
                             animator.SetTrigger("attack");
-                            transform.LookAt(minionTarget);
-                            minionTarget.GetComponent<MinionController>().AttackMinion(UnityEngine.Random.Range(0, 85));
+                            transform.LookAt(target);
+                            minionTarget.AttackMinion(UnityEngine.Random.Range(0, 85));
+                            currentCooldown = attackCooldown;
+                        }
+                    }
+                    else if (tower != null)
+                    {
+                        if (!tower.TowerData.CanBeAttacked())
+                        {
+                            target = null;
+                            return;
+                        }
+                        if (tower.TowerConfig == data.GetTeam())
+                        {
+                            target = null;
+                            return;
+                        }
+                        if (currentCooldown <= 0 && !data.GetIsDead())
+                        {
+                            tower.TriggerHit(UnityEngine.Random.Range(0, 85));
+                            animator.SetTrigger("attack");
+                            transform.LookAt(target);
+                            currentCooldown = attackCooldown;
+                        }
+                    }
+                    else if (nexus != null)
+                    {
+                        if (!nexus.NexusData.CanBeAttacked())
+                        {
+                            target = null;
+                            return;
+                        }
+                        if (nexus.NexusConfig == data.GetTeam())
+                        {
+                            target = null;
+                            return;
+                        }
+                        if (currentCooldown <= 0 && !data.GetIsDead())
+                        {
+                            nexus.TriggerHit(UnityEngine.Random.Range(0, 85));
+                            animator.SetTrigger("attack");
+                            transform.LookAt(target);
                             currentCooldown = attackCooldown;
                         }
                     }
                     else
                     {
-                        minionTarget = null;
+                        target = null;
+                        isAttackingBuilding = false;
                     }
                 }
             }
