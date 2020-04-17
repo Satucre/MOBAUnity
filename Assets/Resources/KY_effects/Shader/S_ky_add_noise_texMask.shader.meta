@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: a8478115f409b4c6cba8c6d7cd4ef9ba
+timeCreated: 1474149556
+licenseType: Store
+ShaderImporter:
+  defaultTextures:
+  - _noseTex: {fileID: 2800000, guid: 0b365c3f883d54bbf8994ed5f1b892b9, type: 3}
+  - _texMask: {fileID: 2800000, guid: 00d1dc61304fe4183bb5dae9ee4dd842, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

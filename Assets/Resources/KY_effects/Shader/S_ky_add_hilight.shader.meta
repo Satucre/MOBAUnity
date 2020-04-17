@@ -1,0 +1,10 @@
+fileFormatVersion: 2
+guid: a8c23b0e240aa485ca20201a604840ef
+timeCreated: 1476331705
+licenseType: Store
+ShaderImporter:
+  defaultTextures:
+  - _hilightNoiseTex: {fileID: 2800000, guid: bf54be6444ced4335a0959f0f6a27b1b, type: 3}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
