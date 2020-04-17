@@ -71,12 +71,22 @@ public class MinionController : MonoBehaviour
                 {
                     minionTarget = GameManager.Instance.Team2Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team2Minions.Count - 1)].transform;
                 } 
+                else
+                {
+                    agent.isStopped = true;
+                    agent.ResetPath();
+                }
             }
             else
             {
                 if (GameManager.Instance.Team1Minions.Count > 0)
                 {
                     minionTarget = GameManager.Instance.Team1Minions[UnityEngine.Random.Range(0, GameManager.Instance.Team1Minions.Count - 1)].transform;
+                }
+                else
+                {
+                    agent.isStopped = true;
+                    agent.ResetPath();
                 }
             }
         }
